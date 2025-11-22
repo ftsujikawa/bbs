@@ -19,6 +19,15 @@ public class UserAccount {
     @Column(nullable = false)
     private String role;
 
+    @Column(name = "profile_image_path")
+    private String profileImagePath;
+
+    @Column(name = "profile_image")
+    private byte[] profileImage;
+
+    @Column(name = "profile_image_content_type")
+    private String profileImageContentType;
+
     public Long getId() {
         return id;
     }
@@ -49,5 +58,29 @@ public class UserAccount {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getProfileImagePath() {
+        return profileImagePath;
+    }
+
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getProfileImageContentType() {
+        return profileImageContentType;
+    }
+
+    public void setProfileImageContentType(String profileImageContentType) {
+        this.profileImageContentType = profileImageContentType;
     }
 }

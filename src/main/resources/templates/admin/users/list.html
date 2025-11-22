@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザ管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100">
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <header class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">ユーザ管理</h1>
+        <a th:href="@{/posts}"
+           class="text-sm text-slate-300 hover:text-indigo-300 transition">投稿一覧へ戻る</a>
+    </header>
+
+    <table class="w-full text-sm text-left border-collapse">
+        <thead class="bg-slate-800/80">
+        <tr>
+            <th class="px-3 py-2 border-b border-slate-700">ID</th>
+            <th class="px-3 py-2 border-b border-slate-700">ユーザ名</th>
+            <th class="px-3 py-2 border-b border-slate-700">ロール</th>
+            <th class="px-3 py-2 border-b border-slate-700">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}" class="border-b border-slate-800">
+            <td class="px-3 py-2" th:text="${user.id}"></td>
+            <td class="px-3 py-2" th:text="${user.username}"></td>
+            <td class="px-3 py-2" th:text="${user.role}"></td>
+            <td class="px-3 py-2 space-x-2">
+                <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}"
+                   class="text-indigo-300 hover:text-indigo-200">編集</a>
+                <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post" class="inline"
+                      onsubmit="return confirm('このユーザを削除してよろしいですか？');">
+                    <button type="submit" class="text-red-400 hover:text-red-300">削除</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -6,6 +6,7 @@ import com.example.bbs.repository.ReplyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReplyService {
@@ -22,5 +23,13 @@ public class ReplyService {
 
     public Reply save(Reply reply) {
         return replyRepository.save(reply);
+    }
+
+    public Optional<Reply> findById(Long id) {
+        return replyRepository.findById(id);
+    }
+
+    public void deleteById(Long id) {
+        replyRepository.deleteById(id);
     }
 }
