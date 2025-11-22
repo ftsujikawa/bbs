@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class AttachmentService {
 
-    private static final long MAX_FILE_SIZE = 2L * 1024 * 1024; // 2MB
+    public static final long MAX_FILE_SIZE = 2L * 1024 * 1024; // 2MB
 
     private final AttachmentRepository attachmentRepository;
 

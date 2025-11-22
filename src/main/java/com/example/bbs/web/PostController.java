@@ -60,7 +60,9 @@ public class PostController {
 
     @GetMapping("/new")
     public String form(Model model, Principal principal) {
-        model.addAttribute("post", new Post());
+        if (!model.containsAttribute("post")) {
+            model.addAttribute("post", new Post());
+        }
         if (principal != null) {
             String username = principal.getName();
             model.addAttribute("username", username);
@@ -81,11 +83,23 @@ public class PostController {
         if (principal != null) {
             post.setAuthor(principal.getName());
         }
-        Post saved = postService.save(post);
-        var errors = attachmentService.saveForPost(saved, files);
-        if (!errors.isEmpty()) {
-            redirectAttributes.addFlashAttribute("attachmentErrors", errors);
+        // 先に添付ファイルのサイズチェックを行い、2MB超過があれば投稿を保存せずにフォームに戻す
+        if (files != null) {
+            java.util.List<String> errors = new java.util.ArrayList<>();
+            for (MultipartFile file : files) {
+                if (file != null && !file.isEmpty() && file.getSize() > AttachmentService.MAX_FILE_SIZE) {
+                    errors.add(file.getOriginalFilename() + " は2MBを超えています。");
+                }
+            }
+            if (!errors.isEmpty()) {
+                redirectAttributes.addFlashAttribute("attachmentErrors", errors);
+                redirectAttributes.addFlashAttribute("post", post);
+                return "redirect:/posts/new";
+            }
         }
+
+        Post saved = postService.save(post);
+        attachmentService.saveForPost(saved, files);
         return "redirect:/posts/" + saved.getId();
     }
 
@@ -198,6 +212,22 @@ public class PostController {
         if (!owner && !admin) {
             return "redirect:/posts/" + id;
         }
+        // まず、この投稿に紐づく返信とその添付ファイルを削除
+        List<com.example.bbs.domain.Reply> replies = replyService.findByPost(post);
+        for (com.example.bbs.domain.Reply reply : replies) {
+            List<Attachment> replyAtts = attachmentService.findByReply(reply);
+            for (Attachment att : replyAtts) {
+                attachmentService.deleteById(att.getId());
+            }
+            replyService.deleteById(reply.getId());
+        }
+
+        // 次に、この投稿に直接紐づく添付ファイルを削除
+        List<Attachment> postAtts = attachmentService.findByPost(post);
+        for (Attachment att : postAtts) {
+            attachmentService.deleteById(att.getId());
+        }
+
         postService.deleteById(id);
         return "redirect:/posts";
     }

@@ -2,6 +2,7 @@ com/example/bbs/web/AdminUserController.class
 com/example/bbs/domain/UserAccount.class
 com/example/bbs/web/AuthController.class
 com/example/bbs/domain/Reply.class
+com/example/bbs/web/GlobalExceptionHandler.class
 com/example/bbs/repository/AttachmentRepository.class
 com/example/bbs/repository/PostRepository.class
 com/example/bbs/config/WebConfig.class
