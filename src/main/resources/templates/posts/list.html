@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>掲示板 - 一覧</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100">
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <header class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight">掲示板</h1>
+            <p class="text-sm text-slate-400 mt-1">シンプルなミニSNSスタイルの掲示板アプリ</p>
+        </div>
+        <div class="space-x-3">
+            <a th:href="@{/register}"
+               class="inline-flex items-center rounded-full border border-slate-500 px-4 py-1.5 text-sm hover:border-indigo-400 hover:text-indigo-300 transition">
+                ユーザ登録
+            </a>
+            <a th:href="@{/login}"
+               class="inline-flex items-center rounded-full bg-indigo-500 px-4 py-1.5 text-sm font-semibold text-white shadow hover:bg-indigo-400 transition">
+                ログイン
+            </a>
+        </div>
+    </header>
+
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">投稿一覧</h2>
+        <a th:href="@{/posts/new}"
+           class="inline-flex items-center rounded-md bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition">
+            ＋ 新規投稿
+        </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(posts)}" class="mt-8 text-center text-slate-400">
+        まだ投稿はありません。最初の投稿をしてみましょう。
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2" th:if="${!#lists.isEmpty(posts)}">
+        <article th:each="post : ${posts}"
+                 class="rounded-xl border border-slate-800 bg-slate-800/60 p-4 shadow-sm hover:border-indigo-400 hover:shadow-md transition">
+            <a th:href="@{'/posts/' + ${post.id}}" class="block">
+                <h3 class="text-lg font-semibold mb-1 truncate" th:text="${post.title}"></h3>
+                <p class="text-sm text-slate-400 mb-3 line-clamp-2" th:text="${post.content}"></p>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                    <span th:text="${post.author}"></span>
+                    <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+                </div>
+            </a>
+        </article>
+    </div>
+</div>
+</body>
+</html>

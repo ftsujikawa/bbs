@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザ登録</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center px-4">
+<div class="w-full max-w-md">
+    <div class="mb-6 text-center">
+        <h1 class="text-2xl font-bold">ユーザ登録</h1>
+        <p class="mt-1 text-sm text-slate-400">新しいアカウントを作成して投稿してみましょう</p>
+    </div>
+
+    <div class="rounded-2xl border border-slate-800 bg-slate-800/80 p-6 shadow-xl">
+        <div th:if="${error}" class="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-300" th:text="${error}"></div>
+        <form th:action="@{/register}" th:object="${user}" method="post" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">ユーザ名</label>
+                <input type="text" th:field="*{username}" required
+                       class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">パスワード</label>
+                <input type="password" th:field="*{password}" required
+                       class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400">
+            </div>
+            <div class="pt-2 flex justify-between items-center">
+                <a th:href="@{/posts}"
+                   class="text-xs text-slate-400 hover:text-slate-200 transition">一覧へ戻る</a>
+                <button type="submit"
+                        class="inline-flex items-center rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-400 transition">
+                    登録してはじめる
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

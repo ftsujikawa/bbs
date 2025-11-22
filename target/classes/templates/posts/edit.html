@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>掲示板 - 編集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100">
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <header class="mb-6 flex items-center justify-between">
+        <h1 class="text-2xl font-bold">投稿の編集</h1>
+        <a th:href="@{'/posts/' + ${post.id}}"
+           class="text-sm text-slate-300 hover:text-indigo-300 transition">投稿詳細へ戻る</a>
+    </header>
+
+    <section class="rounded-2xl border border-slate-800 bg-slate-800/70 p-6 shadow-lg">
+        <form th:action="@{'/posts/' + ${post.id}}" th:object="${post}" method="post" class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">タイトル</label>
+                <input type="text" th:field="*{title}"
+                       class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">本文</label>
+                <textarea th:field="*{content}" rows="6"
+                          class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400" required></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">投稿者</label>
+                <div class="inline-flex items-center rounded-full bg-slate-900/70 px-3 py-1 text-sm text-slate-300 border border-slate-700">
+                    <span class="mr-1 text-xs text-slate-500">@</span>
+                    <span th:text="*{author}"></span>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <a th:href="@{'/posts/' + ${post.id}}"
+                   class="inline-flex items-center rounded-md border border-slate-500 px-4 py-2 text-sm text-slate-200 hover:border-slate-300 hover:text-white transition">
+                    キャンセル
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-400 transition">
+                    更新する
+                </button>
+            </div>
+        </form>
+    </section>
+</div>
+</body>
+</html>
