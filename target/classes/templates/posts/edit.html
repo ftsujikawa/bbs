@@ -14,7 +14,7 @@
     </header>
 
     <section class="rounded-2xl border border-slate-800 bg-slate-800/70 p-6 shadow-lg">
-        <form th:action="@{'/posts/' + ${post.id}}" th:object="${post}" method="post" class="space-y-5">
+        <form th:action="@{'/posts/' + ${post.id}}" th:object="${post}" method="post" enctype="multipart/form-data" class="space-y-5">
             <div>
                 <label class="block text-sm font-medium text-slate-200 mb-1">タイトル</label>
                 <input type="text" th:field="*{title}"
@@ -28,13 +28,18 @@
             <div>
                 <label class="block text-sm font-medium text-slate-200 mb-1">投稿者</label>
                 <div class="inline-flex items-center rounded-full bg-slate-900/70 px-3 py-1 text-sm text-slate-300 border border-slate-700">
+                    <span th:if="${authorProfileImagePath} != null" class="mr-2 inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-slate-700">
+                        <img th:src="${authorProfileImagePath}"
+                             alt="avatar"
+                             class="h-6 w-6 object-cover">
+                    </span>
                     <span class="mr-1 text-xs text-slate-500">@</span>
                     <span th:text="*{author}"></span>
                 </div>
             </div>
-            <div th:if="${postAttachments} != null and !#lists.isEmpty(postAttachments)"
+            <div th:if="${postAttachments != null and !#lists.isEmpty(postAttachments)}"
                  class="text-xs text-slate-300">
-                <div class="font-semibold mb-1">添付ファイル</div>
+                <div class="font-semibold mb-1">既存の添付ファイル</div>
                 <ul class="space-y-1">
                     <li th:each="att : ${postAttachments}" class="flex items-center justify-between">
                         <div>
@@ -42,12 +47,33 @@
                                th:text="${att.originalFilename}"></a>
                             <span class="text-slate-500 ml-1" th:text="${T(java.lang.Math).round(att.size / 1024.0)} + ' KB'"></span>
                         </div>
-                        <form th:action="@{'/posts/' + ${post.id} + '/attachments/' + ${att.id} + '/delete'}" method="post"
-                              onsubmit="return confirm('この添付ファイルを削除してよろしいですか？');">
-                            <button type="submit" class="text-red-400 hover:text-red-300 text-xs">削除</button>
-                        </form>
+                        <button type="button"
+                                class="text-red-400 hover:text-red-300 text-xs"
+                                data-delete-attachment
+                                th:attr="data-post-id=${post.id},data-att-id=${att.id}">
+                            削除
+                        </button>
                     </li>
                 </ul>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-1">新しい添付ファイル (複数可・各2MBまで)</label>
+                <p class="mb-1 text-xs text-slate-400">「ファイルを追加」ボタンで行を増やして、複数回に分けてファイルを選択できます。</p>
+                <div id="edit-file-inputs" class="space-y-1">
+                    <input type="file" name="files"
+                           class="w-full text-sm text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-slate-100 hover:file:bg-slate-600">
+                </div>
+                <button type="button" id="edit-add-file"
+                        class="mt-1 inline-flex items-center rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-200 hover:border-slate-400 hover:text-white transition">
+                    ＋ ファイルを追加
+                </button>
+                <div id="edit-file-list" class="mt-1 text-xs text-slate-300 space-y-0.5"></div>
+                <div th:if="${attachmentErrors}"
+                     class="mt-1 text-xs text-red-300">
+                    <ul class="list-disc list-inside space-y-0.5">
+                        <li th:each="err : ${attachmentErrors}" th:text="${err}"></li>
+                    </ul>
+                </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <a th:href="@{'/posts/' + ${post.id}}"
@@ -62,5 +88,65 @@
         </form>
     </section>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('edit-file-inputs');
+        const addButton = document.getElementById('edit-add-file');
+        const list = document.getElementById('edit-file-list');
+        if (!container || !addButton || !list) return;
+
+        function updateList() {
+            list.innerHTML = '';
+            const files = [];
+            container.querySelectorAll('input[type="file"]').forEach(function (input) {
+                if (!input.files) return;
+                Array.from(input.files).forEach(function (file) {
+                    files.push(file.name);
+                });
+            });
+            if (files.length === 0) return;
+            const ul = document.createElement('ul');
+            ul.className = 'list-disc list-inside space-y-0.5';
+            files.forEach(function (name) {
+                const li = document.createElement('li');
+                li.textContent = name;
+                ul.appendChild(li);
+            });
+            list.appendChild(ul);
+        }
+
+        container.addEventListener('change', function (e) {
+            if (e.target && e.target.type === 'file') {
+                updateList();
+            }
+        });
+
+        addButton.addEventListener('click', function () {
+            const first = container.querySelector('input[type="file"]');
+            if (!first) return;
+            const clone = first.cloneNode(true);
+            clone.value = '';
+            container.appendChild(clone);
+        });
+
+        // 添付削除ボタン用: ネストした<form>を使わずにPOST送信する
+        document.querySelectorAll('[data-delete-attachment]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (!confirm('この添付ファイルを削除してよろしいですか？')) {
+                    return;
+                }
+                const postId = btn.getAttribute('data-post-id');
+                const attId = btn.getAttribute('data-att-id');
+                if (!postId || !attId) return;
+
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '/posts/' + postId + '/attachments/' + attId + '/delete';
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+    });
+</script>
 </body>
 </html>

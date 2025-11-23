@@ -181,11 +181,23 @@ public class PostController {
             return "redirect:/posts/" + id;
         }
         model.addAttribute("post", post);
+        List<Attachment> postAttachments = attachmentService.findByPost(post);
+        model.addAttribute("postAttachments", postAttachments);
+        // 投稿者アイコン表示用
+        userAccountRepository.findByUsername(post.getAuthor()).ifPresent(user -> {
+            if (user.getProfileImage() != null) {
+                model.addAttribute("authorProfileImagePath", "/users/" + post.getAuthor() + "/image");
+            }
+        });
         return "posts/edit";
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute Post form, Principal principal) {
+    public String update(@PathVariable Long id,
+                         @ModelAttribute Post form,
+                         @RequestParam(value = "files", required = false) MultipartFile[] files,
+                         Principal principal,
+                         RedirectAttributes redirectAttributes) {
         Post post = postService.findById(id).orElseThrow();
         String username = principal != null ? principal.getName() : null;
         boolean owner = username != null && username.equals(post.getAuthor());
@@ -197,8 +209,12 @@ public class PostController {
         }
         post.setTitle(form.getTitle());
         post.setContent(form.getContent());
-        postService.save(post);
-        return "redirect:/posts/" + id;
+        Post saved = postService.save(post);
+        var errors = attachmentService.saveForPost(saved, files);
+        if (!errors.isEmpty()) {
+            redirectAttributes.addFlashAttribute("attachmentErrors", errors);
+        }
+        return "redirect:/posts";
     }
 
     @PostMapping("/{id}/delete")
