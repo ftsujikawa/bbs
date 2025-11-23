@@ -4,6 +4,7 @@ import com.example.bbs.domain.Post;
 import com.example.bbs.domain.Reply;
 import com.example.bbs.repository.ReplyRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +22,15 @@ public class ReplyService {
         return replyRepository.findByPostOrderByCreatedAtAsc(post);
     }
 
-    public Reply save(Reply reply) {
+    public Reply save(@NonNull Reply reply) {
         return replyRepository.save(reply);
     }
 
-    public Optional<Reply> findById(Long id) {
+    public Optional<Reply> findById(@NonNull Long id) {
         return replyRepository.findById(id);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(@NonNull Long id) {
         replyRepository.deleteById(id);
     }
 }

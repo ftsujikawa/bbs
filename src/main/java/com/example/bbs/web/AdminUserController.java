@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -30,14 +31,14 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable @NonNull Long id, Model model) {
         UserAccount user = userAccountRepository.findById(id).orElseThrow();
         model.addAttribute("user", user);
         return "admin/users/edit";
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
+    public String update(@PathVariable @NonNull Long id,
                          @RequestParam String username,
                          @RequestParam String role,
                          @RequestParam(required = false) String password) {
@@ -52,7 +53,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable @NonNull Long id) {
         userAccountRepository.deleteById(id);
         return "redirect:/admin/users";
     }

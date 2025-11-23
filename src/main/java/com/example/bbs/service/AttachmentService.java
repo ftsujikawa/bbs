@@ -6,6 +6,7 @@ import com.example.bbs.domain.Reply;
 import com.example.bbs.repository.AttachmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,11 +87,11 @@ public class AttachmentService {
         return attachmentRepository.findByReply(reply);
     }
 
-    public Attachment findById(Long id) {
+    public Attachment findById(@NonNull Long id) {
         return attachmentRepository.findById(id).orElseThrow();
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(@NonNull Long id) {
         attachmentRepository.deleteById(id);
     }
 }

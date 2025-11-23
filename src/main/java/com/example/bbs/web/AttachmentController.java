@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.lang.NonNull;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,7 @@ public class AttachmentController {
     }
 
     @GetMapping("/attachments/{id}")
-    public ResponseEntity<byte[]> download(@PathVariable Long id) {
+    public ResponseEntity<byte[]> download(@PathVariable @NonNull Long id) {
         Attachment attachment = attachmentService.findById(id);
         if (attachment.getData() == null) {
             return ResponseEntity.notFound().build();

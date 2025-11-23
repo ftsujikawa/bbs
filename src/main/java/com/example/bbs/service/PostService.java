@@ -3,6 +3,7 @@ package com.example.bbs.service;
 import com.example.bbs.domain.Post;
 import com.example.bbs.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +21,15 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Optional<Post> findById(Long id) {
+    public Optional<Post> findById(@NonNull Long id) {
         return postRepository.findById(id);
     }
 
-    public Post save(Post post) {
+    public Post save(@NonNull Post post) {
         return postRepository.save(post);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(@NonNull Long id) {
         postRepository.deleteById(id);
     }
 }
