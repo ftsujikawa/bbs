@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.lang.NonNull;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -76,7 +77,7 @@ public class PostController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute Post post,
+    public String create(@ModelAttribute @NonNull Post post,
                          @RequestParam(value = "files", required = false) MultipartFile[] files,
                          Principal principal,
                          RedirectAttributes redirectAttributes) {
@@ -104,7 +105,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model, Principal principal) {
+    public String detail(@PathVariable @NonNull Long id, Model model, Principal principal) {
         Post post = postService.findById(id).orElseThrow();
         model.addAttribute("post", post);
         String username = principal != null ? principal.getName() : null;
@@ -150,8 +151,8 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/attachments/{attachmentId}/delete")
-    public String deletePostAttachment(@PathVariable Long postId,
-                                       @PathVariable Long attachmentId,
+    public String deletePostAttachment(@PathVariable @NonNull Long postId,
+                                       @PathVariable @NonNull Long attachmentId,
                                        Principal principal) {
         if (principal == null) {
             return "redirect:/login";
@@ -170,7 +171,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model, Principal principal) {
+    public String editForm(@PathVariable @NonNull Long id, Model model, Principal principal) {
         Post post = postService.findById(id).orElseThrow();
         String username = principal != null ? principal.getName() : null;
         boolean owner = username != null && username.equals(post.getAuthor());
@@ -193,7 +194,7 @@ public class PostController {
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
+    public String update(@PathVariable @NonNull Long id,
                          @ModelAttribute Post form,
                          @RequestParam(value = "files", required = false) MultipartFile[] files,
                          Principal principal,
@@ -218,7 +219,7 @@ public class PostController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, Principal principal) {
+    public String delete(@PathVariable @NonNull Long id, Principal principal) {
         Post post = postService.findById(id).orElseThrow();
         String username = principal != null ? principal.getName() : null;
         boolean owner = username != null && username.equals(post.getAuthor());

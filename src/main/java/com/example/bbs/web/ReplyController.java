@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.lang.NonNull;
 
 import java.security.Principal;
 
@@ -37,7 +38,7 @@ public class ReplyController {
     }
 
     @PostMapping
-    public String create(@PathVariable Long postId,
+    public String create(@PathVariable @NonNull Long postId,
                          @ModelAttribute Reply reply,
                          @RequestParam(value = "files", required = false) MultipartFile[] files,
                          Principal principal,
@@ -69,7 +70,7 @@ public class ReplyController {
     }
 
     @PostMapping("/{replyId}/delete")
-    public String delete(@PathVariable Long postId, @PathVariable Long replyId, Principal principal) {
+    public String delete(@PathVariable Long postId, @PathVariable @NonNull Long replyId, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
@@ -88,8 +89,8 @@ public class ReplyController {
 
     @PostMapping("/{replyId}/attachments/{attachmentId}/delete")
     public String deleteReplyAttachment(@PathVariable Long postId,
-                                        @PathVariable Long replyId,
-                                        @PathVariable Long attachmentId,
+                                        @PathVariable @NonNull Long replyId,
+                                        @PathVariable @NonNull Long attachmentId,
                                         Principal principal) {
         if (principal == null) {
             return "redirect:/login";
